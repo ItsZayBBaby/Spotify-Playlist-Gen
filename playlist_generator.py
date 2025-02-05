@@ -54,46 +54,6 @@ if "spotify_token" in st.session_state:
 else:
     st.stop()
 
-# ✅ Step 3: Fetch Valid Spotify Genres
-try:
-    valid_genres = sp.recommendation_genre_seeds()["genres"]
-except Exception as e:
-    st.error(f"⚠️ Error fetching valid genres: {e}")
-    st.stop()
-
-# ✅ Step 4: User Selects a Genre
-selected_genre = st.selectbox("Select a Genre:", valid_genres)
-
-
-# ✅ Step 5: Generate Playlist When Button is Clicked
-if st.button("Generate Playlist"):
-    # Validate Genre Selection
-    if selected_genre not in valid_genres:
-        st.error(f"⚠️ '{selected_genre}' is not a valid genre for recommendations.")
-        st.stop()
-
-    # ✅ Step 6: Get Recommended Tracks (Try-Except to Catch API Errors)
-    try:
-        recommendations = sp.recommendations(seed_genres=[selected_genre], limit=20)
-        track_uris = [track["uri"] for track in recommendations["tracks"]]
-    except Exception as e:
-        st.error(f"⚠️ Error fetching recommendations: {e}")
-        st.stop()
-
-         # ✅ Step 7: Create a Playlist and Add Tracks
-    try:
-        user_id = sp.me()["id"]
-        playlist_name = f"{selected_genre.capitalize()} Vibes Playlist"
-        playlist = sp.user_playlist_create(user=user_id, name=playlist_name, public=True)
-        sp.playlist_add_items(playlist_id=playlist["id"], items=track_uris)
-
-        st.success(f"✅ Playlist '{playlist_name}' created!")
-        st.write(f"👉 [Open in Spotify]({playlist['external_urls']['spotify']})")
-
-    except Exception as e:
-        st.error(f"⚠️ Error creating playlist: {e}")
-        st.stop()
-
 # ---------------------------
 # 📊 Fetch & Display User's Top Tracks (Optional)
 # ---------------------------
