@@ -59,7 +59,7 @@ if st.button("Show My Top Tracks"):
     top_tracks = sp.current_user_top_tracks(limit=10, time_range='medium_term')
     
     # Create a list of dictionaries containing detailed info for each track
-  import streamlit as st
+import streamlit as st
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import pandas as pd
