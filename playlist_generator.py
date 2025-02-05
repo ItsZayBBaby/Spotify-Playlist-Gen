@@ -28,6 +28,20 @@ sp = spotipy.Spotify(auth_manager=auth_manager)
 # ---------------------------
 st.title("🎵 Genre-Based Playlist Generator")
 
+# Check if authorization is complete
+query_params = st.experimental_get_query_params()
+auth_code = query_params.get("code", [None])[0]
+
+if auth_code:
+    token_info = auth_manager.get_access_token(auth_code, as_dict=True)
+    access_token = token_info['access_token']
+    sp = spotipy.Spotify(auth=access_token)
+    st.success("✅ Authentication successful! You can now generate playlists.")
+    else:
+    auth_url = auth_manager.get_authorize_url()
+    st.markdown(f"[Click here to authorize Spotify]({auth_url})")
+    st.stop()  # Stop execution until the user logs in
+
 # Select a genre
 selected_genre = st.selectbox("Select a Genre:", ["pop", "rock", "hip-hop", "indie", "electronic", "jazz"])
 
