@@ -65,12 +65,6 @@ if st.button("Show My Top Tracks"):
     for idx, track in enumerate(top_tracks['items']):
         track_id = track['id']
         track_ids.append(track_id)
-
-        # Get artist info to fetch genre (only from the first artist listed)
-        artist_id = track['artists'][0]['id']
-        artist_info = sp.artist(artist_id)  # Fetch artist details
-        genres = artist_info.get('genres', ["Unknown Genre"])  # Get genre list
-
         track_info = {
             "No.": idx + 1,
             "Track Name": track['name'],
