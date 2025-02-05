@@ -18,6 +18,7 @@ auth_manager = SpotifyOAuth(
     client_secret=SPOTIPY_CLIENT_SECRET,
     redirect_uri=SPOTIPY_REDIRECT_URI,
     scope="user-top-read playlist-modify-public playlist-modify-private"
+    show_dialog=True
 )
 
 sp = spotipy.Spotify(auth_manager=auth_manager)
