@@ -32,8 +32,8 @@ st.title("Genre-Based Playlist Generator")
 query_params = st.query_params
 auth_code = query_params.get("code", None)
 
-# ✅ Step 1: Handle Authentication (Check if the user is logged in)
-if "spotify_token" not in st.session_state:
+# Check if we have a valid token
+if "spotify_token" not in st.session_state or auth_manager.validate_token(st.session_state["spotify_token"]) is None:
     auth_url = auth_manager.get_authorize_url()
     st.markdown(f"[Click here to authorize Spotify]({auth_url})")
     auth_code = st.query_params.get("code", None)
@@ -41,17 +41,19 @@ if "spotify_token" not in st.session_state:
     if auth_code:
         try:
             token_info = auth_manager.get_access_token(auth_code, as_dict=True)
-            st.session_state.spotify_token = token_info["access_token"]
+            st.session_state["spotify_token"] = token_info["access_token"]
         except Exception as e:
             st.error(f"⚠️ Error during authentication: {e}")
             st.stop()
 
-# ✅ Step 2: Create Spotify Client After Login
+# Refresh token before every request
 if "spotify_token" in st.session_state:
-    sp = spotipy.Spotify(auth=st.session_state.spotify_token)
-    st.success("✅ Authentication successful! You can now generate playlists.")
-else:
-    st.stop()
+    token_info = auth_manager.get_cached_token()
+    if token_info and auth_manager.validate_token(token_info) is not None:
+        sp = spotipy.Spotify(auth=token_info["access_token"])
+    else:
+        st.error("⚠️ Your session has expired. Please reauthenticate.")
+        st.stop()
 
 # ---------------------------
 # 📊 Fetch & Display User's Top Tracks (Optional)
