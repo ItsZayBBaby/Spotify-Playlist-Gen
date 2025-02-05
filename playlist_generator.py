@@ -1,9 +1,7 @@
 import streamlit as st
-
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import pandas as pd
-import json
 from urllib.parse import urlparse, parse_qs
 
 # ---------------------------
@@ -11,7 +9,7 @@ from urllib.parse import urlparse, parse_qs
 # ---------------------------
 SPOTIPY_CLIENT_ID = "4aa946837d32453dac0d603f1e66258e"
 SPOTIPY_CLIENT_SECRET = "cac0325402e74a148daeaa26c7344629"
-SPOTIPY_REDIRECT_URI = "https://ho94zgrbrqziufzcy7rdtn.streamlit.app/#df314819" 
+SPOTIPY_REDIRECT_URI = "https://ho94zgrbrqziufzcy7rdtn.streamlit.app/"  # Removed fragment for clarity
 
 auth_manager = SpotifyOAuth(
     client_id=SPOTIPY_CLIENT_ID,
@@ -55,12 +53,35 @@ else:
     st.stop()
 
 # ---------------------------
-# 📊 Fetch & Display User's Top Tracks (Optional)
+# 📊 Fetch & Display User's Top Tracks (Enhanced)
 # ---------------------------
 if st.button("Show My Top Tracks"):
     top_tracks = sp.current_user_top_tracks(limit=10, time_range='medium_term')
-
+    
+    # Create a list of dictionaries containing detailed info for each track
+    track_info_list = []
     for idx, track in enumerate(top_tracks['items']):
-        st.write(f"{idx+1}. {track['name']} by {track['artists'][0]['name']}")
+        track_info = {
+            "No.": idx + 1,
+            "Track Name": track['name'],
+            "Artist(s)": ", ".join([artist['name'] for artist in track['artists']]),
+            "Album": track['album']['name'],
+            "Release Date": track['album'].get('release_date', "N/A"),
+            "Preview URL": track.get('preview_url', "No preview")
+        }
+        track_info_list.append(track_info)
+    
+    # Convert list of dictionaries to a DataFrame for tabular display
+    df_tracks = pd.DataFrame(track_info_list)
+    
+    st.subheader("My Top Tracks")
+    st.dataframe(df_tracks)
+    
+    # Optionally, display album cover images for each track
+    st.subheader("Album Covers")
+    for track in top_tracks['items']:
+        album_image_url = track['album']['images'][0]['url'] if track['album']['images'] else None
+        if album_image_url:
+            st.image(album_image_url, caption=f"{track['name']} - {', '.join([artist['name'] for artist in track['artists']])}", width=150)
 
 
