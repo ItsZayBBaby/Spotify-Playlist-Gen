@@ -71,36 +71,54 @@ if st.button("Show My Top Tracks"):
     track_ids = []  # List to store track IDs for audio features lookup
 
     for idx, track in enumerate(top_tracks['items']):
-        track_id = track['id']
-        track_ids.append(track_id)
-        track_info = {
-            "No.": idx + 1,
-            "Track Name": track['name'],
-            "Artist(s)": ", ".join([artist['name'] for artist in track['artists']]),
-            "Album": track['album']['name'],
-            "Release Date": track['album'].get('release_date', "N/A"),
-            "Popularity": track['popularity'],  # Popularity score (0-100) 
-            "Preview URL": track.get('preview_url', "No preview available"),
-        }
-        track_info_list.append(track_info)
-        
- # Fetch additional metadata (audio features)
-    audio_features = sp.audio_features(track_ids)  # Returns a list
+        track_id = track.get('id')  # Ensure we're getting the track ID
+        if track_id:  # Only add non-empty IDs
+            track_ids.append(track_id)
 
-    for i, features in enumerate(audio_features):
-        if features:  # Check if features exist
-            track_info_list[i]["Tempo (BPM)"] = features.get('tempo', "N/A")
-            track_info_list[i]["Valence (Mood)"] = features.get('valence', "N/A")  # Happiness of the track
-            track_info_list[i]["Danceability"] = features.get('danceability', "N/A")  # How danceable it is
-            track_info_list[i]["Energy"] = features.get('energy', "N/A")  # Intensity of the song
-    
-    # Convert list of dictionaries to a DataFrame for tabular display
+            # Get artist info to fetch genre (only from the first artist listed)
+            artist_id = track['artists'][0]['id']
+            artist_info = sp.artist(artist_id)
+            genres = artist_info.get('genres') or ["Unknown Genre"]
+
+            track_info = {
+                "No.": idx + 1,
+                "Track Name": track['name'],
+                "Artist(s)": ", ".join([artist['name'] for artist in track['artists']]),
+                "Album": track['album']['name'],
+                "Release Date": track['album'].get('release_date', "N/A"),
+                "Popularity": track['popularity'],
+                "Genres": ", ".join(str(g) for g in genres),
+                "Preview URL": track.get('preview_url', "No preview available"),
+            }
+            track_info_list.append(track_info)
+
+    # ✅ Debugging: Ensure track_ids list is valid
+    st.write("Debug - Track IDs:", track_ids)
+
+    if not track_ids:  # If the list is empty, stop execution
+        st.error("⚠️ No valid track IDs found. Cannot fetch audio features.")
+        st.stop()
+
+    # ✅ Fetch additional metadata (audio features)
+    try:
+        audio_features = sp.audio_features(track_ids)  # Returns a list
+        for i, features in enumerate(audio_features):
+            if features:
+                track_info_list[i]["Tempo (BPM)"] = features.get('tempo', "N/A")
+                track_info_list[i]["Valence (Mood)"] = features.get('valence', "N/A")
+                track_info_list[i]["Danceability"] = features.get('danceability', "N/A")
+                track_info_list[i]["Energy"] = features.get('energy', "N/A")
+    except Exception as e:
+        st.error(f"⚠️ Error fetching audio features: {e}")
+        st.stop()
+
+    # Convert list to DataFrame for display
     df_tracks = pd.DataFrame(track_info_list)
     
-    st.subheader("My Top Tracks")
+    st.subheader("🎵 My Top Tracks (With Additional Metadata)")
     st.dataframe(df_tracks)
     
-    # Optionally, display album cover images for each track
+    # Optionally, display album covers
     st.subheader("Album Covers")
     for track in top_tracks['items']:
         album_image_url = track['album']['images'][0]['url'] if track['album']['images'] else None
