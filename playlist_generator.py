@@ -56,6 +56,14 @@ else:
 # ---------------------------
 # 📊 Fetch & Display User's Top Tracks (Optional)
 # ---------------------------
+
+try:
+    user_profile = sp.me()
+    st.write("Logged in as:", user_profile["display_name"])
+except Exception as e:
+    st.error(f"Error verifying user profile: {e}")
+    st.stop()
+
 if st.button("Show My Top Tracks"):
     top_tracks = sp.current_user_top_tracks(limit=10, time_range='medium_term')
 
@@ -71,8 +79,7 @@ if st.button("Show My Top Tracks"):
             "Artist(s)": ", ".join([artist['name'] for artist in track['artists']]),
             "Album": track['album']['name'],
             "Release Date": track['album'].get('release_date', "N/A"),
-            "Popularity": track['popularity'],  # Popularity score (0-100)
-            "Genres": ", ".join(genres),  # Genre(s) from the first artist
+            "Popularity": track['popularity'],  # Popularity score (0-100) 
             "Preview URL": track.get('preview_url', "No preview available"),
         }
         track_info_list.append(track_info)
