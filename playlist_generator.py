@@ -4,7 +4,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 SPOTIPY_CLIENT_ID = "4aa946837d32453dac0d603f1e66258e"
 SPOTIPY_CLIENT_SECRET = "cac0325402e74a148daeaa26c7344629"
-SPOTIPY_REDIRECT_URI = "https://ho94zgrbrqziufzcy7rdtn.streamlit.app/"   
+SPOTIPY_REDIRECT_URI = "https://ho94zgrbrqziufzcy7rdtn.streamlit.app/#df314819"   
 
 # Initialize OAuth with manual login (no caching to avoid reusing your token)
 auth_manager = SpotifyOAuth(
