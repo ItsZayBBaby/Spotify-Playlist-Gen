@@ -29,8 +29,9 @@ sp = spotipy.Spotify(auth_manager=auth_manager)
 st.title("🎵 Genre-Based Playlist Generator")
 
 # Check if authorization is complete
-query_params = st.experimental_get_query_params()
-auth_code = query_params.get("code", [None])[0]
+query_params = st.query_params
+auth_code = query_params.get("code", None)
+
 
 if auth_code:
     token_info = auth_manager.get_access_token(auth_code, as_dict=True)
