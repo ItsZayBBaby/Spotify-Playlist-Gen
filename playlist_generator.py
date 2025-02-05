@@ -25,7 +25,7 @@ sp = None  # Define sp globally so it can be assigned later
 # ---------------------------
 # 🎵 Streamlit UI: Genre-Based Playlist Generator
 # ---------------------------
-st.title(" Genre-Based Playlist Generator")
+st.title ("Genre-Based Playlist Generator")
 
 # Check if authorization is complete
 query_params = st.query_params
