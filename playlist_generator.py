@@ -59,18 +59,39 @@ else:
 if st.button("Show My Top Tracks"):
     top_tracks = sp.current_user_top_tracks(limit=10, time_range='medium_term')
 
-     # Create a list of dictionaries containing detailed info for each track
     track_info_list = []
+    track_ids = []  # List to store track IDs for audio features lookup
+
     for idx, track in enumerate(top_tracks['items']):
+        track_id = track['id']
+        track_ids.append(track_id)
+
+        # Get artist info to fetch genre (only from the first artist listed)
+        artist_id = track['artists'][0]['id']
+        artist_info = sp.artist(artist_id)  # Fetch artist details
+        genres = artist_info.get('genres', ["Unknown Genre"])  # Get genre list
+
         track_info = {
             "No.": idx + 1,
             "Track Name": track['name'],
             "Artist(s)": ", ".join([artist['name'] for artist in track['artists']]),
             "Album": track['album']['name'],
             "Release Date": track['album'].get('release_date', "N/A"),
-            "Preview URL": track.get('preview_url', "No preview")
+            "Popularity": track['popularity'],  # Popularity score (0-100)
+            "Genres": ", ".join(genres),  # Genre(s) from the first artist
+            "Preview URL": track.get('preview_url', "No preview available"),
         }
         track_info_list.append(track_info)
+        
+ # Fetch additional metadata (audio features)
+    audio_features = sp.audio_features(track_ids)  # Returns a list
+
+    for i, features in enumerate(audio_features):
+        if features:  # Check if features exist
+            track_info_list[i]["Tempo (BPM)"] = features.get('tempo', "N/A")
+            track_info_list[i]["Valence (Mood)"] = features.get('valence', "N/A")  # Happiness of the track
+            track_info_list[i]["Danceability"] = features.get('danceability', "N/A")  # How danceable it is
+            track_info_list[i]["Energy"] = features.get('energy', "N/A")  # Intensity of the song
     
     # Convert list of dictionaries to a DataFrame for tabular display
     df_tracks = pd.DataFrame(track_info_list)
