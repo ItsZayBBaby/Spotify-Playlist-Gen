@@ -1,5 +1,3 @@
-!pip install spotipy streamlit
-
 import streamlit as st
 
 import spotipy
