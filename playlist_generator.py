@@ -2,11 +2,9 @@ import streamlit as st
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 
-# Spotify Credentials from Streamlit Secrets
-SPOTIPY_CLIENT_ID = st.secrets["SPOTIPY_CLIENT_ID"]
-SPOTIPY_CLIENT_SECRET = st.secrets["SPOTIPY_CLIENT_SECRET"]
-# IMPORTANT: Use your actual deployed Streamlit app URL here
-SPOTIPY_REDIRECT_URI = "https://your-app-name.streamlit.app"  
+SPOTIPY_CLIENT_ID = "4aa946837d32453dac0d603f1e66258e"
+SPOTIPY_CLIENT_SECRET = "cac0325402e74a148daeaa26c7344629"
+SPOTIPY_REDIRECT_URI = "https://ho94zgrbrqziufzcy7rdtn.streamlit.app/#df314819"   
 
 # Initialize OAuth with manual login (no caching to avoid reusing your token)
 auth_manager = SpotifyOAuth(
