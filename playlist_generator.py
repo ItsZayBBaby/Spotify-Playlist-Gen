@@ -11,7 +11,7 @@ from urllib.parse import urlparse, parse_qs
 # ---------------------------
 SPOTIPY_CLIENT_ID = "4aa946837d32453dac0d603f1e66258e"
 SPOTIPY_CLIENT_SECRET = "cac0325402e74a148daeaa26c7344629"
-SPOTIPY_REDIRECT_URI = "http://localhost:8888/callback/"
+SPOTIPY_REDIRECT_URI = "https://your-streamlit-app.streamlit.app" 
 
 auth_manager = SpotifyOAuth(
     client_id=SPOTIPY_CLIENT_ID,
