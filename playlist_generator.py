@@ -37,7 +37,7 @@ if auth_code:
     access_token = token_info['access_token']
     sp = spotipy.Spotify(auth=access_token)
     st.success("✅ Authentication successful! You can now generate playlists.")
-    else:
+else:
     auth_url = auth_manager.get_authorize_url()
     st.markdown(f"[Click here to authorize Spotify]({auth_url})")
     st.stop()  # Stop execution until the user logs in
